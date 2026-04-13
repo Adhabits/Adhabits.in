@@ -1348,58 +1348,258 @@
   </noscript>
 
   <!-- ==================== UNIFIED TRACKING SETUP ==================== -->
-  <script>
-    // Dual Pixel Tracker - Tracks events on BOTH pixels simultaneously
-    window.DualPixel = {
-      pixelIds: ['1173855581456092', '1173855581456092'],
+# Let me create the optimized tracking code for the landing page
+# This will ensure Lead event fires only once when going to WhatsApp
+
+optimized_code = '''
+    // ===== UNIFIED TRACKING SETUP =====
+    window.AdHabitsTracker = {
+      // Track if Lead event already fired
+      leadFired: false,
       
-      track: function(eventName, eventData) {
+      // Fire Lead event only once
+      fireLead: function(plan, platform, value) {
+        if (this.leadFired) return; // Prevent double firing
+        
         try {
-          this.pixelIds.forEach(pixelId => {
-            if (window.fbq) {
-              window.fbq('trackSingle', pixelId, eventName, eventData || {});
-            }
-          });
-          console.log('📊 DualPixel:', eventName, eventData);
+          if (window.fbq) {
+            fbq('track', 'Lead', {
+              content_name: plan || 'Direct WhatsApp',
+              content_category: platform || 'Website',
+              value: value || 0,
+              currency: 'INR'
+            });
+          }
+          this.leadFired = true;
+          console.log('✅ Lead event fired (once)');
         } catch (e) {
-          console.error('Pixel tracking error:', e);
+          console.error('Lead tracking error:', e);
         }
       },
       
-      trackCustom: function(eventName, eventData) {
+      // Fire Contact event
+      fireContact: function(method) {
         try {
-          this.pixelIds.forEach(pixelId => {
-            if (window.fbq) {
-              window.fbq('trackSingleCustom', pixelId, eventName, eventData || {});
-            }
-          });
-          console.log('📊 DualPixel Custom:', eventName, eventData);
+          if (window.fbq) {
+            fbq('track', 'Contact', {
+              content_category: method || 'WhatsApp'
+            });
+          }
+          console.log('📞 Contact event fired:', method);
         } catch (e) {
-          console.error('Pixel tracking error:', e);
+          console.error('Contact tracking error:', e);
         }
+      },
+      
+      // Unified WhatsApp redirect with tracking
+      goToWhatsApp: function(phone, message, plan, platform, value) {
+        // Fire both events ONCE
+        this.fireLead(plan, platform, value);
+        this.fireContact('WhatsApp');
+        
+        // Open WhatsApp
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
       }
     };
 
-    // Track page view completion
-    window.addEventListener('load', function() {
-      setTimeout(() => {
-        DualPixel.trackCustom('PageLoadComplete', {time_on_page: 3});
-      }, 3000);
-    });
+    // ===== MOBILE MENU =====
+    const hamb = document.getElementById('hamb');
+    const mnav = document.getElementById('mnav');
+    
+    if (hamb && mnav) {
+      hamb.addEventListener('click', () => {
+        const isOpen = mnav.classList.toggle('on');
+        hamb.setAttribute('aria-expanded', isOpen);
+      });
 
-    // Track scroll depth
-    let scrollTracked = {25: false, 50: false, 75: false, 100: false};
-    window.addEventListener('scroll', function() {
-      const pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-      [25, 50, 75, 100].forEach(threshold => {
-        if (pct >= threshold && !scrollTracked[threshold]) {
-          scrollTracked[threshold] = true;
-          DualPixel.trackCustom('ScrollDepth', {depth: threshold});
-        }
+      document.querySelectorAll('#mnav a').forEach(a => {
+        a.addEventListener('click', () => {
+          mnav.classList.remove('on');
+          hamb.setAttribute('aria-expanded', false);
+        });
+      });
+    }
+
+    // ===== REVEAL & NUMBER ANIMATIONS =====
+    function animateNum(el, to, dur = 1300) {
+      const start = performance.now();
+      const from = 0;
+      
+      function step(t) {
+        const p = Math.min(1, (t - start) / dur);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(from + ease * to);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      
+      requestAnimationFrame(step);
+    }
+
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('on');
+            if (e.target.classList.contains('knum')) {
+              animateNum(e.target, parseInt(e.target.dataset.count, 10));
+            }
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    document.querySelectorAll('.reveal, .knum').forEach(el => io.observe(el));
+
+    // ===== PLAN BUTTONS - Scroll to form only =====
+    document.querySelectorAll('.plan-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const planName = this.dataset.plan;
+        
+        // Save to session and scroll to form
+        sessionStorage.setItem('adh_plan', planName);
+        document.getElementById('name').focus({ preventScroll: true });
+        
+        // Smooth scroll to form
+        document.getElementById('getstart').scrollIntoView({ behavior: 'smooth' });
       });
     });
-  </script>
-</head>
+
+    // ===== WHATSAPP BUTTONS (Expert Section) =====
+    document.querySelectorAll('button[data-whatsapp="true"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const plan = sessionStorage.getItem('adh_plan') || 'Direct WhatsApp';
+        const WHATSAPP_TO = "919610580359";
+        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service.\\n\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
+        
+        // Unified tracking - Lead + Contact (ek baar hi hoga)
+        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, 'Expert Section', 0);
+      });
+    });
+
+    // ===== FORM HANDLING =====
+    const leadForm = document.getElementById('leadForm');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (leadForm && sendBtn) {
+      leadForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const platform = document.getElementById('platform').value.trim();
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const plan = sessionStorage.getItem('adh_plan') || 'Starter';
+
+        // Validation
+        if (!platform || !name || !phone) {
+          alert('⚠️ Please fill all required fields.');
+          return;
+        }
+
+        if (!/^[0-9]{10}$/.test(phone)) {
+          alert('⚠️ Enter valid 10-digit phone number.');
+          return;
+        }
+
+        // Disable button & show loading
+        const originalBtnText = sendBtn.innerHTML;
+        sendBtn.disabled = true;
+        sendBtn.classList.add('loading');
+        sendBtn.innerHTML = '<span>Processing...</span>';
+
+        // Prepare data for Google Sheets
+        const payload = new URLSearchParams({
+          name,
+          phone,
+          platform,
+          plan,
+          timestamp: new Date().toISOString()
+        });
+
+        // Save to Google Sheets
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznR1Wk3Gn2jztC1ZXnBW4jr52146ctHC3phfdn8Ve3zuwKvCflNIOy_sxfPZNhQbbf/exec";
+        
+        try {
+          if (navigator.sendBeacon) {
+            const blob = new Blob([payload.toString()], { type: 'application/x-www-form-urlencoded' });
+            navigator.sendBeacon(SCRIPT_URL, blob);
+          } else {
+            await fetch(SCRIPT_URL, { 
+              method: 'POST', 
+              body: payload, 
+              mode: 'no-cors',
+              keepalive: true 
+            }).catch(() => {});
+          }
+        } catch (_) {}
+
+        // Prepare WhatsApp message
+        const WHATSAPP_TO = "919610580359";
+        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service. My details:\\n\\n📋 *Platform:* ${platform}\\n👤 *Name:* ${name}\\n📱 *Phone:* ${phone}\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
+        
+        // Determine value based on plan
+        let planValue = 0;
+        if (plan.includes('3,999')) planValue = 3999;
+        else if (plan.includes('6,999')) planValue = 6999;
+        else if (plan.includes('9,999')) planValue = 9999;
+
+        // Unified tracking - Lead + Contact (sirf ek baar trigger hoga)
+        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, platform, planValue);
+
+        // Reset button after delay
+        setTimeout(() => {
+          sendBtn.disabled = false;
+          sendBtn.classList.remove('loading');
+          sendBtn.innerHTML = originalBtnText;
+          leadForm.reset();
+          sessionStorage.removeItem('adh_plan');
+          // Reset lead flag for next user session
+          AdHabitsTracker.leadFired = false;
+        }, 1500);
+      });
+    }
+
+    // ===== BACK TO TOP BUTTON =====
+    const backToTop = document.getElementById('backToTop');
+    
+    if (backToTop) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          backToTop.classList.add('show');
+        } else {
+          backToTop.classList.remove('show');
+        }
+      });
+
+      backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // ===== MAGNETIC CURSOR EFFECT =====
+    const magneticElements = document.querySelectorAll('.magnetic');
+    
+    magneticElements.forEach(el => {
+      el.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        this.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+      });
+
+      el.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+      });
+    });
+'''
+
+print(optimized_code)
+print("\\n" + "="*80)
+print("YE CODE AAPKE </body> TAG KE JUST PEHLE PASTE KAREIN")
+print("="*80)
 
 <body>
   <!-- Accessibility: Skip to main content -->
