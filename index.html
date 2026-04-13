@@ -1332,8 +1332,7 @@
     /* This block has been removed to maintain dark theme on all devices */
   </style>
 
-  
-  <!-- ==================== META PIXEL #2 (New) ==================== -->
+  <!-- ==================== META PIXEL (SINGLE ID - 1173855581456092) ==================== -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -1348,57 +1347,61 @@
     <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1173855581456092&ev=PageView&noscript=1"/>
   </noscript>
 
-  <!-- ==================== UNIFIED TRACKING SETUP ==================== -->
+  <!-- ==================== UNIFIED TRACKING SETUP (LEAD + CONTACT ONCE) ==================== -->
   <script>
-    // Dual Pixel Tracker - Tracks events on BOTH pixels simultaneously
-    window.DualPixel = {
-      pixelIds: ['1173855581456092'],
+    // Unified Tracker - Lead event sirf ek baar fire hoga
+    window.AdHabitsTracker = {
+      // Track if Lead event already fired
+      leadFired: false,
       
-      track: function(eventName, eventData) {
+      // Fire Lead event (sirf ek baar)
+      fireLead: function(plan, platform, value) {
+        if (this.leadFired) {
+          console.log('⚠️ Lead event already fired - skipping duplicate');
+          return;
+        }
+        
         try {
-          this.pixelIds.forEach(pixelId => {
-            if (window.fbq) {
-              window.fbq('trackSingle', pixelId, eventName, eventData || {});
-            }
-          });
-          console.log('📊 DualPixel:', eventName, eventData);
+          if (window.fbq) {
+            fbq('track', 'Lead', {
+              content_name: plan || 'Direct WhatsApp',
+              content_category: platform || 'Website',
+              value: value || 0,
+              currency: 'INR'
+            });
+            console.log('✅ Lead event fired:', { plan, platform, value });
+          }
+          this.leadFired = true;
         } catch (e) {
-          console.error('Pixel tracking error:', e);
+          console.error('Lead tracking error:', e);
         }
       },
       
-      trackCustom: function(eventName, eventData) {
+      // Fire Contact event (hamesha fire hoga)
+      fireContact: function(method) {
         try {
-          this.pixelIds.forEach(pixelId => {
-            if (window.fbq) {
-              window.fbq('trackSingleCustom', pixelId, eventName, eventData || {});
-            }
-          });
-          console.log('📊 DualPixel Custom:', eventName, eventData);
+          if (window.fbq) {
+            fbq('track', 'Contact', {
+              content_category: method || 'WhatsApp'
+            });
+            console.log('📞 Contact event fired:', method);
+          }
         } catch (e) {
-          console.error('Pixel tracking error:', e);
+          console.error('Contact tracking error:', e);
         }
+      },
+      
+      // Unified WhatsApp redirect - dono events ek saath
+      goToWhatsApp: function(phone, message, plan, platform, value) {
+        // Pehle tracking karo
+        this.fireLead(plan, platform, value);
+        this.fireContact('WhatsApp');
+        
+        // Phir WhatsApp open karo
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
       }
     };
-
-    // Track page view completion
-    window.addEventListener('load', function() {
-      setTimeout(() => {
-        DualPixel.trackCustom('PageLoadComplete', {time_on_page: 3});
-      }, 3000);
-    });
-
-    // Track scroll depth
-    let scrollTracked = {25: false, 50: false, 75: false, 100: false};
-    window.addEventListener('scroll', function() {
-      const pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-      [25, 50, 75, 100].forEach(threshold => {
-        if (pct >= threshold && !scrollTracked[threshold]) {
-          scrollTracked[threshold] = true;
-          DualPixel.trackCustom('ScrollDepth', {depth: threshold});
-        }
-      });
-    });
   </script>
 </head>
 
@@ -1438,41 +1441,42 @@
 
   <main>
     <!-- HERO SECTION -->
-<section class="hero" aria-labelledby="hero-title">
-  <div class="container">
-    <div class="reveal">
-      <span class="eyebrow">Affiliate Marketer?</span>
-      <h1 id="hero-title">Let Us Run Your <span class="hl2">Meta Ads</span><br>&amp; Get You More Leads</h1>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="reveal">
+          <span class="eyebrow">Affiliate Marketer?</span>
+          <h1 id="hero-title">Let Us Run Your <span class="hl2">Meta Ads</span><br>&amp; Get You More Leads</h1>
 
-      <div class="video-card">
-        <div class="yt-embed">
-          <iframe
-            src="https://www.youtube.com/embed/22S_KlKYzP8?rel=0&modestbranding=1&playsinline=1&autoplay=0"
-            title="AdHabits Intro"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-          </iframe>
+          <div class="video-card">
+            <div class="yt-embed">
+              <iframe
+                src="https://www.youtube.com/embed/22S_KlKYzP8?rel=0&modestbranding=1&playsinline=1&autoplay=0"
+                title="AdHabits Intro"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+
+          <div class="kpis">
+            <b class="reveal knum" data-count="3">0</b>+ Years Experience •
+            <b class="reveal knum" data-count="290">0</b>+ Affiliates Served •
+            Trusted by <b class="reveal knum" data-count="60">0</b>+ Top Performers
+          </div>
+
+          <div class="cta">
+            <a href="#getstart" class="btn primary magnetic" aria-label="Get ad setup help">Yes, I want ad setup help!</a>
+            <a href="#features" class="btn secondary magnetic" aria-label="See how it works">See How It Works</a>
+          </div>
+
+          <div class="panel" role="note">
+            <span aria-hidden="true">⚡</span> Fast onboarding • <span aria-hidden="true">✅</span> Verified results • <span aria-hidden="true">💬</span> WhatsApp support
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="kpis">
-        <b class="reveal knum" data-count="3">0</b>+ Years Experience •
-        <b class="reveal knum" data-count="290">0</b>+ Affiliates Served •
-        Trusted by <b class="reveal knum" data-count="60">0</b>+ Top Performers
-      </div>
-
-      <div class="cta">
-        <a href="#getstart" class="btn primary magnetic" aria-label="Get ad setup help">Yes, I want ad setup help!</a>
-        <a href="#features" class="btn secondary magnetic" aria-label="See how it works">See How It Works</a>
-      </div>
-
-      <div class="panel" role="note">
-        <span aria-hidden="true">⚡</span> Fast onboarding • <span aria-hidden="true">✅</span> Verified results • <span aria-hidden="true">💬</span> WhatsApp support
-      </div>
-    </div>
-  </div>
-</section>
     <!-- BRAND TICKER -->
     <section class="bnc" aria-labelledby="bnc-title">
       <div class="container">
@@ -1538,7 +1542,7 @@
         <div class="ex-copy">
           <h2 id="expert-title">Meet Your Expert</h2>
           <p class="ex-sub">
-            Hey! I'm <b class="name-grad">Rahman</b>. With 3+ years in affiliate marketing &amp; Meta ads, I’ve helped 250+ affiliates scale. I don’t do theory — I run your campaigns end-to-end so you can focus on converting leads into sales.
+            Hey! I'm <b class="name-grad">Rahman</b>. With 3+ years in affiliate marketing &amp; Meta ads, I've helped 250+ affiliates scale. I don't do theory — I run your campaigns end-to-end so you can focus on converting leads into sales.
           </p>
 
           <div class="ex-stats">
@@ -1553,7 +1557,7 @@
           </div>
 
           <button class="ex-btn magnetic" data-whatsapp="true" data-plan="Expert Contact" aria-label="Contact Rahman on WhatsApp">
-            Let’s talk with <span class="name-grad" style="font-weight: 900; color: #000">&nbsp;Rahman&nbsp;</span> on WhatsApp
+            Let's talk with <span class="name-grad" style="font-weight: 900; color: #000">&nbsp;Rahman&nbsp;</span> on WhatsApp
           </button>
         </div>
       </div>
@@ -1577,7 +1581,72 @@
           <div class="tc-card"><div class="tc-shot"><img src="https://i.postimg.cc/pL97pKTL/Rukhsaar-finel.jpg" alt="Testimonial from Rukhsaar" loading="lazy" /></div></div>
         </div>
       </div>
-    </section>   
+    </section>
+
+    <!-- PLANS -->
+    <section id="plans" class="plans" aria-labelledby="plans-title">
+      <div class="container">
+        <h2 id="plans-title" class="plans-title">Choose Your Plan</h2>
+        <p class="plans-sub">Select the perfect plan for your affiliate marketing needs</p>
+
+        <div class="plan-grid">
+          <!-- Plan 1 -->
+          <div class="plan-card reveal">
+            <div class="row">
+              <div class="plan-name">Starter</div>
+              <div class="price"><span class="strike">₹5,999</span>₹3,999</div>
+            </div>
+            <ul class="plan-list">
+              <li>7 Days Ad Management</li>
+              <li>1 Ad Campaign</li>
+              <li>Basic Targeting</li>
+              <li>WhatsApp Support</li>
+            </ul>
+            <div class="plan-actions">
+              <button class="plan-btn" data-plan="Starter" data-plan-price="3999" data-plan-duration="7 Days">Get Started</button>
+            </div>
+          </div>
+
+          <!-- Plan 2 -->
+          <div class="plan-card reveal">
+            <div class="row">
+              <div class="plan-name">Professional</div>
+              <div class="price"><span class="strike">₹9,999</span>₹6,999</div>
+            </div>
+            <ul class="plan-list">
+              <li>15 Days Ad Management</li>
+              <li>2 Ad Campaigns</li>
+              <li>Advanced Targeting</li>
+              <li>Creative Optimization</li>
+              <li>Priority WhatsApp Support</li>
+            </ul>
+            <div class="plan-actions">
+              <button class="plan-btn" data-plan="Professional" data-plan-price="6999" data-plan-duration="15 Days">Get Started</button>
+            </div>
+          </div>
+
+          <!-- Plan 3 -->
+          <div class="plan-card reveal">
+            <div class="row">
+              <div class="plan-name">Elite</div>
+              <div class="price"><span class="strike">₹14,999</span>₹9,999</div>
+            </div>
+            <ul class="plan-list">
+              <li>30 Days Ad Management</li>
+              <li>3 Ad Campaigns</li>
+              <li>Premium Targeting</li>
+              <li>Creative + Copy Optimization</li>
+              <li>Daily Updates</li>
+              <li>24/7 Priority Support</li>
+            </ul>
+            <div class="plan-actions">
+              <button class="plan-btn" data-plan="Elite" data-plan-price="9999" data-plan-duration="30 Days">Get Started</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ -->
     <section id="faq" class="faq" aria-labelledby="faq-title">
       <div class="container">
@@ -1678,7 +1747,7 @@
         <div class="foot-links">
           <a class="ig" href="https://www.instagram.com/adhabits.in/" target="_blank" rel="noopener" aria-label="AdHabits Instagram">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.3 2.4.5.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.9-.5 2.4-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.3-2.4-.5-.6-.2-1-.5-1.4-.9-.4.4.8.7 1.4.9.5.2 1.2.4 2.4.5C8.4 2.2 8.8 2.2 12 2.2m0 1.8c-3.1 0-3.5 0-4.8.1-1 .1-1.5.2-1.9.4-.5.2-.8.4-1.1.7-.3.3-.5.6-.7 1.1-.2.4-.3.9-.4 1.9-.1 1.3-.1 1.7-.1 4.8s0 3.5.1 4.8c.1 1 .2 1.5.4 1.9.2.5.4.8.7 1.1.3.3.6.5 1.1.7.4.2.9.3 1.9.4 1.3.1 1.7.1 4.8.1s3.5 0 4.8-.1c1-.1 1.5-.2 1.9-.4.5-.2.8-.4 1.1-.7.3-.3.5-.6.7-1.1.2-.4.3-.9.4-1.9.1-1.3.1-1.7.1-4.8s0-3.5-.1-4.8c-.1-1-.2-1.5-.4-1.9-.2-.5-.4-.8-.7-1.1-.3-.3-.6-.5-1.1-.7-.4-.2-.9-.3-1.9-.4-1.3-.1-1.7-.1-4.8-.1zm0 3.1a5.9 5.9 0 110 11.8 5.9 5.9 0 010-11.8zm0 1.8a4.1 4.1 0 100 8.2 4.1 4.1 0 000-8.2zm5.9-2.2a1.4 1.4 0 110 2.8 1.4 1.4 0 010-2.8z"/>
+              <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.3 2.4.5.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.9-.5 2.4-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.3-2.4-.5-.6-.2-1-.5-1.4-.9-.4.4.8.7 1.4.9.5.2 1.2.4 2.4.5C8.4 2.2 8.8 2.2 12 2.2m0 1.8c-3.1 0-3.5 0-4.8.1-1 .1-1.5.2-1.9.4-.5.2-.8.4-1.1.7-.3.3-.5.6-.7 1.1-.2.4-.3.9-.4 1.9-.1 1.3-.1 1.7-.1 4.8s0 3.5.1 4.8c.1 1 .2 1.5.4 1.9.2.5.4.8.7 1.1.3.3.6.5 1.1.7.4.2.9.3-1.9-.4-1.3-.1-1.7-.1-4.8-.1zm0 3.1a5.9 5.9 0 110 11.8 5.9 5.9 0 010-11.8zm0 1.8a4.1 4.1 0 100 8.2 4.1 4.1 0 000-8.2zm5.9-2.2a1.4 1.4 0 110 2.8 1.4 1.4 0 010-2.8z"/>
             </svg>
             Instagram
           </a>
@@ -1749,56 +1818,35 @@
 
     document.querySelectorAll('.reveal, .knum').forEach(el => io.observe(el));
 
-    // ===== PLAN BUTTONS - Track & Scroll =====
+    // ===== PLAN BUTTONS - Scroll to form only =====
     document.querySelectorAll('.plan-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const planName = this.dataset.plan;
-        const planPrice = this.dataset.planPrice;
-        const planDuration = this.dataset.planDuration;
         
-        // Track plan selection on BOTH pixels
-        DualPixel.track('AddToCart', {
-          content_name: planName,
-          content_category: 'Service Plan',
-          value: planPrice,
-          currency: 'INR'
-        });
-        
-        DualPixel.trackCustom('PlanSelected', {
-          plan: planName,
-          price: planPrice,
-          duration: planDuration
-        });
-
-        // Save to session and scroll to form
+        // Save to session
         sessionStorage.setItem('adh_plan', planName);
-        document.getElementById('name').focus({ preventScroll: true });
         
-        // Smooth scroll to form
+        // Scroll to form
         document.getElementById('getstart').scrollIntoView({ behavior: 'smooth' });
+        
+        // Focus on name field
+        setTimeout(() => {
+          document.getElementById('name').focus();
+        }, 500);
       });
     });
 
-    // ===== WHATSAPP LINK TRACKING =====
-    function bindWhatsAppLinks() {
-      document.querySelectorAll('a[href*="wa.me"], a[href*="api.whatsapp.com"], button[data-whatsapp="true"]').forEach(a => {
-        a.addEventListener('click', function() {
-          const plan = sessionStorage.getItem('adh_plan') || 'Direct WhatsApp';
-          DualPixel.trackCustom('WhatsAppLinkClick', { plan: plan });
-          
-          // Track as Lead if coming from form or expert section
-          if (this.closest('#getstart') || this.closest('.exp1')) {
-            DualPixel.track('Lead', {
-              content_name: plan,
-              content_category: 'WhatsApp Contact',
-              value: 0,
-              currency: 'INR'
-            });
-          }
-        });
+    // ===== WHATSAPP BUTTON (EXPERT SECTION) =====
+    document.querySelectorAll('button[data-whatsapp="true"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const plan = sessionStorage.getItem('adh_plan') || 'Direct WhatsApp';
+        const WHATSAPP_TO = "919610580359";
+        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service.\\n\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
+        
+        // Unified tracking - Sirf ek baar Lead + Contact
+        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, 'Expert Section', 0);
       });
-    }
-    bindWhatsAppLinks();
+    });
 
     // ===== FORM HANDLING =====
     const leadForm = document.getElementById('leadForm');
@@ -1824,16 +1872,13 @@
           return;
         }
 
-        // Track form submission attempt
-        DualPixel.trackCustom('FormSubmitAttempt', { plan, platform });
-
         // Disable button & show loading
-        const originalBtnText = sendBtn.textContent;
+        const originalBtnText = sendBtn.innerHTML;
         sendBtn.disabled = true;
         sendBtn.classList.add('loading');
-        sendBtn.textContent = 'Processing...';
+        sendBtn.innerHTML = '<span>Processing...</span>';
 
-        // Prepare data
+        // Prepare data for Google Sheets
         const payload = new URLSearchParams({
           name,
           phone,
@@ -1841,12 +1886,6 @@
           plan,
           timestamp: new Date().toISOString()
         });
-
-        // Add UTM data if available
-        const utm = sessionStorage.getItem('adh_utm');
-        if (utm) {
-          payload.append('utm', utm);
-        }
 
         // Save to Google Sheets
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznR1Wk3Gn2jztC1ZXnBW4jr52146ctHC3phfdn8Ve3zuwKvCflNIOy_sxfPZNhQbbf/exec";
@@ -1865,33 +1904,28 @@
           }
         } catch (_) {}
 
-        // Track conversions on BOTH pixels
-        DualPixel.track('Lead', {
-          content_name: plan,
-          content_category: platform,
-          value: plan.includes('3,999') ? 3999 : plan.includes('6,999') ? 6999 : 9999,
-          currency: 'INR'
-        });
-        
-        DualPixel.trackCustom('WhatsAppOpen', {
-          plan: plan,
-          platform: platform,
-          form_completed: true
-        });
-
-        // Open WhatsApp (FIXED: Removed extra space in URL)
+        // Prepare WhatsApp message
         const WHATSAPP_TO = "919610580359";
-        const msg = `Hello Rahman sir,\n\nI am interested in your ad service. My details:\n\n📋 *Platform:* ${platform}\n👤 *Name:* ${name}\n📱 *Phone:* ${phone}\n💼 *Selected Plan:* ${plan}\n\nPlease share me details and next steps.`;
+        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service. My details:\\n\\n📋 *Platform:* ${platform}\\n👤 *Name:* ${name}\\n📱 *Phone:* ${phone}\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
         
-        window.open(`https://wa.me/${WHATSAPP_TO}?text=${encodeURIComponent(msg)}`, '_blank');
+        // Determine value based on plan
+        let planValue = 0;
+        if (plan.includes('3,999') || plan === 'Starter') planValue = 3999;
+        else if (plan.includes('6,999') || plan === 'Professional') planValue = 6999;
+        else if (plan.includes('9,999') || plan === 'Elite') planValue = 9999;
+
+        // Unified tracking - Sirf ek baar Lead + Contact fire hoga
+        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, platform, planValue);
 
         // Reset button after delay
         setTimeout(() => {
           sendBtn.disabled = false;
           sendBtn.classList.remove('loading');
-          sendBtn.textContent = originalBtnText;
+          sendBtn.innerHTML = originalBtnText;
           leadForm.reset();
           sessionStorage.removeItem('adh_plan');
+          // Reset lead flag for next user (optional)
+          // AdHabitsTracker.leadFired = false; 
         }, 1500);
       });
     }
@@ -1932,4 +1966,3 @@
   </script>
 </body>
 </html>
-
