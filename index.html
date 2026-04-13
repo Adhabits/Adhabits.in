@@ -240,7 +240,6 @@
       overflow: hidden;
     }
 
-    /* Subtle animated background particles */
     .hero::before {
       content: '';
       position: absolute;
@@ -553,7 +552,6 @@
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
     }
 
-    /* SHINING EFFECT */
     .stk-card::before {
       content: '';
       position: absolute;
@@ -585,7 +583,6 @@
       }
     }
 
-    /* Animated border gradient */
     .stk-card::after {
       content: '';
       position: absolute;
@@ -879,7 +876,6 @@
       box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
     }
 
-    /* SHINING EFFECT FOR PLAN CARDS */
     .plan-card::before {
       content: '';
       position: absolute;
@@ -897,7 +893,6 @@
       animation: shine 1.2s ease-out;
     }
 
-    /* Price with gradient and shine */
     .price {
       font: 800 30px/1.1 Inter, sans-serif;
       background: var(--grad);
@@ -925,7 +920,6 @@
       animation: shine 1.2s ease-out;
     }
 
-    /* Animated border gradient */
     .plan-card::after {
       content: '';
       position: absolute;
@@ -1327,13 +1321,10 @@
       transition: transform 0.3s ease;
       will-change: transform;
     }
-
-    /* ==================== DARK MODE SUPPORT REMOVED ==================== */
-    /* This block has been removed to maintain dark theme on all devices */
   </style>
 
-  <!-- ==================== META PIXEL #1 (Original) ==================== -->
-   <script>
+  <!-- ==================== META PIXEL (SINGLE - NO DUAL) ==================== -->
+  <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
     n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
@@ -1346,260 +1337,7 @@
   <noscript>
     <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1173855581456092&ev=PageView&noscript=1"/>
   </noscript>
-
-  <!-- ==================== UNIFIED TRACKING SETUP ==================== -->
-# Let me create the optimized tracking code for the landing page
-# This will ensure Lead event fires only once when going to WhatsApp
-
-optimized_code = '''
-    // ===== UNIFIED TRACKING SETUP =====
-    window.AdHabitsTracker = {
-      // Track if Lead event already fired
-      leadFired: false,
-      
-      // Fire Lead event only once
-      fireLead: function(plan, platform, value) {
-        if (this.leadFired) return; // Prevent double firing
-        
-        try {
-          if (window.fbq) {
-            fbq('track', 'Lead', {
-              content_name: plan || 'Direct WhatsApp',
-              content_category: platform || 'Website',
-              value: value || 0,
-              currency: 'INR'
-            });
-          }
-          this.leadFired = true;
-          console.log('✅ Lead event fired (once)');
-        } catch (e) {
-          console.error('Lead tracking error:', e);
-        }
-      },
-      
-      // Fire Contact event
-      fireContact: function(method) {
-        try {
-          if (window.fbq) {
-            fbq('track', 'Contact', {
-              content_category: method || 'WhatsApp'
-            });
-          }
-          console.log('📞 Contact event fired:', method);
-        } catch (e) {
-          console.error('Contact tracking error:', e);
-        }
-      },
-      
-      // Unified WhatsApp redirect with tracking
-      goToWhatsApp: function(phone, message, plan, platform, value) {
-        // Fire both events ONCE
-        this.fireLead(plan, platform, value);
-        this.fireContact('WhatsApp');
-        
-        // Open WhatsApp
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
-      }
-    };
-
-    // ===== MOBILE MENU =====
-    const hamb = document.getElementById('hamb');
-    const mnav = document.getElementById('mnav');
-    
-    if (hamb && mnav) {
-      hamb.addEventListener('click', () => {
-        const isOpen = mnav.classList.toggle('on');
-        hamb.setAttribute('aria-expanded', isOpen);
-      });
-
-      document.querySelectorAll('#mnav a').forEach(a => {
-        a.addEventListener('click', () => {
-          mnav.classList.remove('on');
-          hamb.setAttribute('aria-expanded', false);
-        });
-      });
-    }
-
-    // ===== REVEAL & NUMBER ANIMATIONS =====
-    function animateNum(el, to, dur = 1300) {
-      const start = performance.now();
-      const from = 0;
-      
-      function step(t) {
-        const p = Math.min(1, (t - start) / dur);
-        const ease = 1 - Math.pow(1 - p, 3);
-        el.textContent = Math.floor(from + ease * to);
-        if (p < 1) requestAnimationFrame(step);
-      }
-      
-      requestAnimationFrame(step);
-    }
-
-    const io = new IntersectionObserver(
-      entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('on');
-            if (e.target.classList.contains('knum')) {
-              animateNum(e.target, parseInt(e.target.dataset.count, 10));
-            }
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.25 }
-    );
-
-    document.querySelectorAll('.reveal, .knum').forEach(el => io.observe(el));
-
-    // ===== PLAN BUTTONS - Scroll to form only =====
-    document.querySelectorAll('.plan-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const planName = this.dataset.plan;
-        
-        // Save to session and scroll to form
-        sessionStorage.setItem('adh_plan', planName);
-        document.getElementById('name').focus({ preventScroll: true });
-        
-        // Smooth scroll to form
-        document.getElementById('getstart').scrollIntoView({ behavior: 'smooth' });
-      });
-    });
-
-    // ===== WHATSAPP BUTTONS (Expert Section) =====
-    document.querySelectorAll('button[data-whatsapp="true"]').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const plan = sessionStorage.getItem('adh_plan') || 'Direct WhatsApp';
-        const WHATSAPP_TO = "919610580359";
-        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service.\\n\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
-        
-        // Unified tracking - Lead + Contact (ek baar hi hoga)
-        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, 'Expert Section', 0);
-      });
-    });
-
-    // ===== FORM HANDLING =====
-    const leadForm = document.getElementById('leadForm');
-    const sendBtn = document.getElementById('sendBtn');
-    
-    if (leadForm && sendBtn) {
-      leadForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const platform = document.getElementById('platform').value.trim();
-        const name = document.getElementById('name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const plan = sessionStorage.getItem('adh_plan') || 'Starter';
-
-        // Validation
-        if (!platform || !name || !phone) {
-          alert('⚠️ Please fill all required fields.');
-          return;
-        }
-
-        if (!/^[0-9]{10}$/.test(phone)) {
-          alert('⚠️ Enter valid 10-digit phone number.');
-          return;
-        }
-
-        // Disable button & show loading
-        const originalBtnText = sendBtn.innerHTML;
-        sendBtn.disabled = true;
-        sendBtn.classList.add('loading');
-        sendBtn.innerHTML = '<span>Processing...</span>';
-
-        // Prepare data for Google Sheets
-        const payload = new URLSearchParams({
-          name,
-          phone,
-          platform,
-          plan,
-          timestamp: new Date().toISOString()
-        });
-
-        // Save to Google Sheets
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznR1Wk3Gn2jztC1ZXnBW4jr52146ctHC3phfdn8Ve3zuwKvCflNIOy_sxfPZNhQbbf/exec";
-        
-        try {
-          if (navigator.sendBeacon) {
-            const blob = new Blob([payload.toString()], { type: 'application/x-www-form-urlencoded' });
-            navigator.sendBeacon(SCRIPT_URL, blob);
-          } else {
-            await fetch(SCRIPT_URL, { 
-              method: 'POST', 
-              body: payload, 
-              mode: 'no-cors',
-              keepalive: true 
-            }).catch(() => {});
-          }
-        } catch (_) {}
-
-        // Prepare WhatsApp message
-        const WHATSAPP_TO = "919610580359";
-        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service. My details:\\n\\n📋 *Platform:* ${platform}\\n👤 *Name:* ${name}\\n📱 *Phone:* ${phone}\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
-        
-        // Determine value based on plan
-        let planValue = 0;
-        if (plan.includes('3,999')) planValue = 3999;
-        else if (plan.includes('6,999')) planValue = 6999;
-        else if (plan.includes('9,999')) planValue = 9999;
-
-        // Unified tracking - Lead + Contact (sirf ek baar trigger hoga)
-        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, platform, planValue);
-
-        // Reset button after delay
-        setTimeout(() => {
-          sendBtn.disabled = false;
-          sendBtn.classList.remove('loading');
-          sendBtn.innerHTML = originalBtnText;
-          leadForm.reset();
-          sessionStorage.removeItem('adh_plan');
-          // Reset lead flag for next user session
-          AdHabitsTracker.leadFired = false;
-        }, 1500);
-      });
-    }
-
-    // ===== BACK TO TOP BUTTON =====
-    const backToTop = document.getElementById('backToTop');
-    
-    if (backToTop) {
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-          backToTop.classList.add('show');
-        } else {
-          backToTop.classList.remove('show');
-        }
-      });
-
-      backToTop.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-
-    // ===== MAGNETIC CURSOR EFFECT =====
-    const magneticElements = document.querySelectorAll('.magnetic');
-    
-    magneticElements.forEach(el => {
-      el.addEventListener('mousemove', function(e) {
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        
-        this.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
-      });
-
-      el.addEventListener('mouseleave', function() {
-        this.style.transform = '';
-      });
-    });
-'''
-
-print(optimized_code)
-print("\\n" + "="*80)
-print("YE CODE AAPKE </body> TAG KE JUST PEHLE PASTE KAREIN")
-print("="*80)
+</head>
 
 <body>
   <!-- Accessibility: Skip to main content -->
@@ -1637,41 +1375,42 @@ print("="*80)
 
   <main>
     <!-- HERO SECTION -->
-<section class="hero" aria-labelledby="hero-title">
-  <div class="container">
-    <div class="reveal">
-      <span class="eyebrow">Affiliate Marketer?</span>
-      <h1 id="hero-title">Let Us Run Your <span class="hl2">Meta Ads</span><br>&amp; Get You More Leads</h1>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="reveal">
+          <span class="eyebrow">Affiliate Marketer?</span>
+          <h1 id="hero-title">Let Us Run Your <span class="hl2">Meta Ads</span><br>&amp; Get You More Leads</h1>
 
-      <div class="video-card">
-        <div class="yt-embed">
-          <iframe
-            src="https://www.youtube.com/embed/22S_KlKYzP8?rel=0&modestbranding=1&playsinline=1&autoplay=0"
-            title="AdHabits Intro"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-          </iframe>
+          <div class="video-card">
+            <div class="yt-embed">
+              <iframe
+                src="https://www.youtube.com/embed/22S_KlKYzP8?rel=0&modestbranding=1&playsinline=1&autoplay=0"
+                title="AdHabits Intro"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+
+          <div class="kpis">
+            <b class="reveal knum" data-count="3">0</b>+ Years Experience •
+            <b class="reveal knum" data-count="290">0</b>+ Affiliates Served •
+            Trusted by <b class="reveal knum" data-count="60">0</b>+ Top Performers
+          </div>
+
+          <div class="cta">
+            <a href="#getstart" class="btn primary magnetic" aria-label="Get ad setup help">Yes, I want ad setup help!</a>
+            <a href="#features" class="btn secondary magnetic" aria-label="See how it works">See How It Works</a>
+          </div>
+
+          <div class="panel" role="note">
+            <span aria-hidden="true">⚡</span> Fast onboarding • <span aria-hidden="true">✅</span> Verified results • <span aria-hidden="true">💬</span> WhatsApp support
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="kpis">
-        <b class="reveal knum" data-count="3">0</b>+ Years Experience •
-        <b class="reveal knum" data-count="290">0</b>+ Affiliates Served •
-        Trusted by <b class="reveal knum" data-count="60">0</b>+ Top Performers
-      </div>
-
-      <div class="cta">
-        <a href="#getstart" class="btn primary magnetic" aria-label="Get ad setup help">Yes, I want ad setup help!</a>
-        <a href="#features" class="btn secondary magnetic" aria-label="See how it works">See How It Works</a>
-      </div>
-
-      <div class="panel" role="note">
-        <span aria-hidden="true">⚡</span> Fast onboarding • <span aria-hidden="true">✅</span> Verified results • <span aria-hidden="true">💬</span> WhatsApp support
-      </div>
-    </div>
-  </div>
-</section>
     <!-- BRAND TICKER -->
     <section class="bnc" aria-labelledby="bnc-title">
       <div class="container">
@@ -1737,7 +1476,7 @@ print("="*80)
         <div class="ex-copy">
           <h2 id="expert-title">Meet Your Expert</h2>
           <p class="ex-sub">
-            Hey! I'm <b class="name-grad">Rahman</b>. With 3+ years in affiliate marketing &amp; Meta ads, I’ve helped 250+ affiliates scale. I don’t do theory — I run your campaigns end-to-end so you can focus on converting leads into sales.
+            Hey! I'm <b class="name-grad">Rahman</b>. With 3+ years in affiliate marketing &amp; Meta ads, I've helped 250+ affiliates scale. I don't do theory — I run your campaigns end-to-end so you can focus on converting leads into sales.
           </p>
 
           <div class="ex-stats">
@@ -1752,7 +1491,7 @@ print("="*80)
           </div>
 
           <button class="ex-btn magnetic" data-whatsapp="true" data-plan="Expert Contact" aria-label="Contact Rahman on WhatsApp">
-            Let’s talk with <span class="name-grad" style="font-weight: 900; color: #000">&nbsp;Rahman&nbsp;</span> on WhatsApp
+            Let's talk with <span class="name-grad" style="font-weight: 900; color: #000">&nbsp;Rahman&nbsp;</span> on WhatsApp
           </button>
         </div>
       </div>
@@ -1776,7 +1515,72 @@ print("="*80)
           <div class="tc-card"><div class="tc-shot"><img src="https://i.postimg.cc/pL97pKTL/Rukhsaar-finel.jpg" alt="Testimonial from Rukhsaar" loading="lazy" /></div></div>
         </div>
       </div>
-    </section>   
+    </section>
+
+    <!-- PLANS -->
+    <section id="plans" class="plans" aria-labelledby="plans-title">
+      <div class="container">
+        <h2 id="plans-title" class="plans-title">Choose Your Plan</h2>
+        <p class="plans-sub">Select the perfect plan for your affiliate marketing needs</p>
+
+        <div class="plan-grid">
+          <!-- Plan 1 -->
+          <div class="plan-card reveal">
+            <div class="row">
+              <div class="plan-name">Starter</div>
+              <div class="price"><span class="strike">₹5,999</span>₹3,999</div>
+            </div>
+            <ul class="plan-list">
+              <li>7 Days Ad Management</li>
+              <li>1 Ad Campaign</li>
+              <li>Basic Targeting</li>
+              <li>WhatsApp Support</li>
+            </ul>
+            <div class="plan-actions">
+              <button class="plan-btn" data-plan="Starter" data-plan-price="3999" data-plan-duration="7 Days">Get Started</button>
+            </div>
+          </div>
+
+          <!-- Plan 2 -->
+          <div class="plan-card reveal">
+            <div class="row">
+              <div class="plan-name">Professional</div>
+              <div class="price"><span class="strike">₹9,999</span>₹6,999</div>
+            </div>
+            <ul class="plan-list">
+              <li>15 Days Ad Management</li>
+              <li>2 Ad Campaigns</li>
+              <li>Advanced Targeting</li>
+              <li>Creative Optimization</li>
+              <li>Priority WhatsApp Support</li>
+            </ul>
+            <div class="plan-actions">
+              <button class="plan-btn" data-plan="Professional" data-plan-price="6999" data-plan-duration="15 Days">Get Started</button>
+            </div>
+          </div>
+
+          <!-- Plan 3 -->
+          <div class="plan-card reveal">
+            <div class="row">
+              <div class="plan-name">Elite</div>
+              <div class="price"><span class="strike">₹14,999</span>₹9,999</div>
+            </div>
+            <ul class="plan-list">
+              <li>30 Days Ad Management</li>
+              <li>3 Ad Campaigns</li>
+              <li>Premium Targeting</li>
+              <li>Creative + Copy Optimization</li>
+              <li>Daily Updates</li>
+              <li>24/7 Priority Support</li>
+            </ul>
+            <div class="plan-actions">
+              <button class="plan-btn" data-plan="Elite" data-plan-price="9999" data-plan-duration="30 Days">Get Started</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ -->
     <section id="faq" class="faq" aria-labelledby="faq-title">
       <div class="container">
@@ -1887,7 +1691,6 @@ print("="*80)
       <div id="terms" style="margin-top: 8px; color: #9fb0c9">
         <b>Terms &amp; Conditions:</b> Services are provided as-is. Due to the nature of digital ad services, all payments are <u>Non-Refundable</u>.
       </div>
-      <!-- Contact Details Added Here -->
       <div id="contact-details" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #233149; color: #8292b6; font-size: 14px;">
         <p style="margin-bottom: 8px;"><strong>Address:</strong> Jaipur</p>
         <p style="margin-bottom: 8px;">Phone: <a href="tel:9743140915" style="color: #9fc5ff; text-decoration: none;">9743140915</a></p>
@@ -1896,8 +1699,62 @@ print("="*80)
     </div>
   </footer>
 
-  <!-- ==================== JAVASCRIPT ==================== -->
+  <!-- ==================== OPTIMIZED JAVASCRIPT ==================== -->
   <script>
+    // ===== UNIFIED TRACKING SYSTEM (SINGLE LEAD + CONTACT EVENT) =====
+    window.AdHabitsTracker = {
+      // Flag to ensure Lead fires only once per session
+      leadFired: false,
+      
+      // Fire Lead event (sirf ek baar)
+      fireLead: function(plan, platform, value) {
+        if (this.leadFired) {
+          console.log('⚠️ Lead event already fired - skipping duplicate');
+          return;
+        }
+        
+        try {
+          if (window.fbq) {
+            fbq('track', 'Lead', {
+              content_name: plan || 'Direct WhatsApp',
+              content_category: platform || 'Website',
+              value: value || 0,
+              currency: 'INR'
+            });
+            console.log('✅ Lead event fired:', { plan, platform, value });
+          }
+          this.leadFired = true;
+        } catch (e) {
+          console.error('Lead tracking error:', e);
+        }
+      },
+      
+      // Fire Contact event (hamesha fire hoga)
+      fireContact: function(method) {
+        try {
+          if (window.fbq) {
+            fbq('track', 'Contact', {
+              content_category: method || 'WhatsApp'
+            });
+            console.log('📞 Contact event fired:', method);
+          }
+        } catch (e) {
+          console.error('Contact tracking error:', e);
+        }
+      },
+      
+      // Unified WhatsApp redirect - dono events ek saath
+      goToWhatsApp: function(phone, message, plan, platform, value) {
+        // Pehle tracking karo
+        this.fireLead(plan, platform, value);
+        this.fireContact('WhatsApp');
+        
+        // Phir WhatsApp open karo
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+      }
+    };
+
     // ===== MOBILE MENU =====
     const hamb = document.getElementById('hamb');
     const mnav = document.getElementById('mnav');
@@ -1948,56 +1805,35 @@ print("="*80)
 
     document.querySelectorAll('.reveal, .knum').forEach(el => io.observe(el));
 
-    // ===== PLAN BUTTONS - Track & Scroll =====
+    // ===== PLAN BUTTONS - Only scroll to form =====
     document.querySelectorAll('.plan-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const planName = this.dataset.plan;
-        const planPrice = this.dataset.planPrice;
-        const planDuration = this.dataset.planDuration;
         
-        // Track plan selection on BOTH pixels
-        DualPixel.track('AddToCart', {
-          content_name: planName,
-          content_category: 'Service Plan',
-          value: planPrice,
-          currency: 'INR'
-        });
-        
-        DualPixel.trackCustom('PlanSelected', {
-          plan: planName,
-          price: planPrice,
-          duration: planDuration
-        });
-
-        // Save to session and scroll to form
+        // Save to session
         sessionStorage.setItem('adh_plan', planName);
-        document.getElementById('name').focus({ preventScroll: true });
         
-        // Smooth scroll to form
+        // Scroll to form
         document.getElementById('getstart').scrollIntoView({ behavior: 'smooth' });
+        
+        // Focus on name field
+        setTimeout(() => {
+          document.getElementById('name').focus();
+        }, 500);
       });
     });
 
-    // ===== WHATSAPP LINK TRACKING =====
-    function bindWhatsAppLinks() {
-      document.querySelectorAll('a[href*="wa.me"], a[href*="api.whatsapp.com"], button[data-whatsapp="true"]').forEach(a => {
-        a.addEventListener('click', function() {
-          const plan = sessionStorage.getItem('adh_plan') || 'Direct WhatsApp';
-          DualPixel.trackCustom('WhatsAppLinkClick', { plan: plan });
-          
-          // Track as Lead if coming from form or expert section
-          if (this.closest('#getstart') || this.closest('.exp1')) {
-            DualPixel.track('Lead', {
-              content_name: plan,
-              content_category: 'WhatsApp Contact',
-              value: 0,
-              currency: 'INR'
-            });
-          }
-        });
+    // ===== WHATSAPP BUTTON (EXPERT SECTION) =====
+    document.querySelectorAll('button[data-whatsapp="true"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const plan = sessionStorage.getItem('adh_plan') || 'Direct WhatsApp';
+        const WHATSAPP_TO = "919610580359";
+        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service.\\n\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
+        
+        // Unified tracking - Sirf ek baar Lead + Contact
+        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, 'Expert Section', 0);
       });
-    }
-    bindWhatsAppLinks();
+    });
 
     // ===== FORM HANDLING =====
     const leadForm = document.getElementById('leadForm');
@@ -2023,16 +1859,13 @@ print("="*80)
           return;
         }
 
-        // Track form submission attempt
-        DualPixel.trackCustom('FormSubmitAttempt', { plan, platform });
-
         // Disable button & show loading
-        const originalBtnText = sendBtn.textContent;
+        const originalBtnText = sendBtn.innerHTML;
         sendBtn.disabled = true;
         sendBtn.classList.add('loading');
-        sendBtn.textContent = 'Processing...';
+        sendBtn.innerHTML = '<span>Processing...</span>';
 
-        // Prepare data
+        // Prepare data for Google Sheets
         const payload = new URLSearchParams({
           name,
           phone,
@@ -2040,12 +1873,6 @@ print("="*80)
           plan,
           timestamp: new Date().toISOString()
         });
-
-        // Add UTM data if available
-        const utm = sessionStorage.getItem('adh_utm');
-        if (utm) {
-          payload.append('utm', utm);
-        }
 
         // Save to Google Sheets
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznR1Wk3Gn2jztC1ZXnBW4jr52146ctHC3phfdn8Ve3zuwKvCflNIOy_sxfPZNhQbbf/exec";
@@ -2064,33 +1891,28 @@ print("="*80)
           }
         } catch (_) {}
 
-        // Track conversions on BOTH pixels
-        DualPixel.track('Lead', {
-          content_name: plan,
-          content_category: platform,
-          value: plan.includes('3,999') ? 3999 : plan.includes('6,999') ? 6999 : 9999,
-          currency: 'INR'
-        });
-        
-        DualPixel.trackCustom('WhatsAppOpen', {
-          plan: plan,
-          platform: platform,
-          form_completed: true
-        });
-
-        // Open WhatsApp (FIXED: Removed extra space in URL)
+        // Prepare WhatsApp message
         const WHATSAPP_TO = "919610580359";
-        const msg = `Hello Rahman sir,\n\nI am interested in your ad service. My details:\n\n📋 *Platform:* ${platform}\n👤 *Name:* ${name}\n📱 *Phone:* ${phone}\n💼 *Selected Plan:* ${plan}\n\nPlease share me details and next steps.`;
+        const msg = `Hello Rahman sir,\\n\\nI am interested in your ad service. My details:\\n\\n📋 *Platform:* ${platform}\\n👤 *Name:* ${name}\\n📱 *Phone:* ${phone}\\n💼 *Selected Plan:* ${plan}\\n\\nPlease share me details and next steps.`;
         
-        window.open(`https://wa.me/${WHATSAPP_TO}?text=${encodeURIComponent(msg)}`, '_blank');
+        // Determine value based on plan
+        let planValue = 0;
+        if (plan.includes('3,999') || plan === 'Starter') planValue = 3999;
+        else if (plan.includes('6,999') || plan === 'Professional') planValue = 6999;
+        else if (plan.includes('9,999') || plan === 'Elite') planValue = 9999;
+
+        // Unified tracking - Sirf ek baar Lead + Contact fire hoga
+        AdHabitsTracker.goToWhatsApp(WHATSAPP_TO, msg, plan, platform, planValue);
 
         // Reset button after delay
         setTimeout(() => {
           sendBtn.disabled = false;
           sendBtn.classList.remove('loading');
-          sendBtn.textContent = originalBtnText;
+          sendBtn.innerHTML = originalBtnText;
           leadForm.reset();
           sessionStorage.removeItem('adh_plan');
+          // Reset lead flag for next user (optional - agar page reload nahi hua to)
+          // AdHabitsTracker.leadFired = false; 
         }, 1500);
       });
     }
@@ -2131,4 +1953,3 @@ print("="*80)
   </script>
 </body>
 </html>
-
